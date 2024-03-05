@@ -1,4 +1,4 @@
-package com.insoft.discoveryservice;
+package com.tungvt.discoveryservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
