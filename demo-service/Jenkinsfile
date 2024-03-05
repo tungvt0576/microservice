@@ -40,7 +40,7 @@ pipeline {
                         sh "docker build --rm -t ${IMAGE} ."
                         sh "ssh ${SSH_USER}@${SSH_HOST} 'docker rm -f ${IMAGE} && docker rmi -f ${IMAGE}'"
                         sh "docker save ${IMAGE} | ssh ${SSH_USER}@${SSH_HOST} 'docker load'"
-                        sh "ssh ${SSH_USER}@${SSH_HOST} 'docker run -d -p ${PORT}:${PORT} --network mci --restart always -e API_GATEWAY=${API_GATEWAY_ADDRESS} -e URL_DATABASE=${URL_DATABASE} --name ${IMAGE} ${IMAGE}'"
+                        sh "ssh ${SSH_USER}@${SSH_HOST} 'docker run -d -p ${PORT}:${PORT} --network tungvt --restart always -e API_GATEWAY=${API_GATEWAY_ADDRESS} -e URL_DATABASE=${URL_DATABASE} --name ${IMAGE} ${IMAGE}'"
                         sh "docker rmi -f ${IMAGE}"
                     }
                 }

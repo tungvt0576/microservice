@@ -1,7 +1,7 @@
-package com.mci.schedule.controller;
+package com.tungvt.demo.controller;
 
-import com.mci.schedule.payload.BaseResponse;
-import com.mci.schedule.service.ScheduleService;
+import com.tungvt.demo.payload.BaseResponse;
+import com.tungvt.demo.service.demoService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +19,7 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("${api.prefix}/demo")
-public class ScheduleController {
+public class demoController {
 
     @GetMapping("demo")
     public ResponseEntity<Object> demo(

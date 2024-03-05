@@ -38,7 +38,7 @@ pipeline {
                         sh "docker build --rm -t ${IMAGE} ."
                         sh "ssh ${SSH_USER}@${SSH_HOST} 'docker rm -f ${IMAGE} && docker rmi -f ${IMAGE}'"
                         sh "docker save ${IMAGE} | ssh ${SSH_USER}@${SSH_HOST} 'docker load'"
-                        sh "ssh ${SSH_USER}@${SSH_HOST} 'docker run -d -p ${PORT}:${PORT} --restart always --network mci --name ${IMAGE} ${IMAGE}'"
+                        sh "ssh ${SSH_USER}@${SSH_HOST} 'docker run -d -p ${PORT}:${PORT} --restart always --network tungvt --name ${IMAGE} ${IMAGE}'"
                         sh "docker rmi -f ${IMAGE}"
                     }
                 }

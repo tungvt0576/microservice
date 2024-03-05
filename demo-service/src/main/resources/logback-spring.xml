@@ -8,7 +8,7 @@
     <!-- log level -->
     <springProperty scope="context" name="LOG_LEVEL" source="logging.level.root"/>
     <!-- log file name -->
-    <property name="LOG_FILE_NAME" value="schedule-service"/>
+    <property name="LOG_FILE_NAME" value="demo-service"/>
     <!-- LOG PATTERN -->
     <property name="LOG_PATTERN" value="%d{[yy-MM-dd HH:mm:ss]} %highlight([%-5level]) %cyan([%logger{0}:%line]) %msg%n"/>
     <!-- CONSOLE LOG PATTERN : gray, blue, cyan, green, magenta, red, yellow, boldBlue... -->
