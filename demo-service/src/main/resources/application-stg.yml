@@ -1,0 +1,21 @@
+eureka:
+  instance:
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: ${DISCOVERY-SERVICE:http://discovery-service:8761/eureka}
+
+openapi:
+  service:
+    title: schedule-service doc #title that you will want to display in the swagger ui
+    version: 1.0.0
+    #    url: http://127.0.0.1:8088 #api gateway url
+    url: http://${API_GATEWAY:api-gateway:8081}
+    #url: lb://API-GATEWAY
+springdoc:
+  api-docs:
+    path: /schedule-service/v3/api-docs #these urls will used to load the swagger ui of this service by the api gateway
+  swagger-ui:
+    path: /schedule-service/swagger-ui.html

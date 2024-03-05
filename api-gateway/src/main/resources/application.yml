@@ -1,0 +1,55 @@
+server:
+  port: 8081
+  servlet:
+    context-path: /
+
+eureka:
+  instance:
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${server.port}}
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      #defaultZone: http://discovery-service:8761/eureka
+      defaultZone: ${DISCOVERY_SERVICE:http://discovery-service:8761/eureka}
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+      routes:
+        - id: demo-service
+          uri: lb://DEMO-SERVICE
+          predicates:
+            - Path=/demo-service/v1/**
+          filters:
+            - RewritePath=/demo-service/v1/(?<path>.*), /demo-service/v1/$\{path}
+      httpclient:
+        wiretap: true
+
+springdoc:
+  enable-native-support: true
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    config-url: /v3/api-docs/swagger-config
+    urls:
+      - url: /v3/api-docs
+        name: API Gateway Service
+      - url: /demo-service/v3/api-docs
+        name: Demo service
+logging:
+  level:
+    org.springframework.cloud.gateway: trace
+    reactor.netty: trace

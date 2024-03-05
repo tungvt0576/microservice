@@ -1,0 +1,15 @@
+server:
+  port: 8088
+  servlet:
+    context-path: /
+spring:
+  application:
+    name: demo-service
+
+---
+spring:
+  profiles:
+    active: dev,stg,prod
+
+api:
+  prefix: /demo-service/v1

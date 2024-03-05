@@ -1,0 +1,50 @@
+pipeline {
+    agent any
+    tools{
+        gradle 'gradle'
+        jdk 'jdk-17'
+    }
+    environment {
+        REPO_GITLAB_URL = 'http://git.com/example'
+        REPO_BRANCH = 'dev'
+        CREDENTIAL = 'admin'
+        IMAGE = 'example-service'
+        PORT = 8082
+        SSH_HOST = '102.168.0.222'
+        SSH_USER = 'admin'
+        WORK_DIR = 'example-service''
+        API_GATEWAY_ADDRESS='http://192.168.0.222:8081'
+        URL_DATABASE='jdbc:postgresql://192.168.0.222:5432/test?currentSchema=test-dev'
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                script {
+                    checkout([
+                        $class: 'GitSCM',
+                        branches: [[name: REPO_BRANCH]],
+                        userRemoteConfigs: [[credentialsId: CREDENTIAL, url: REPO_GITLAB_URL]],
+                        extensions: [[$class: 'SparseCheckoutPaths', sparseCheckoutPaths: [[$class: 'SparseCheckoutPath', path: WORK_DIR]]]],
+                        browser: [$class: 'GitLab', repoUrl: REPO_GITLAB_URL, version: '14.10.5']
+                    ])
+                }
+            }
+        }
+
+        stage('Build and Deploy') {
+            steps {
+                dir(WORK_DIR) {
+                    script {
+                        sh 'gradle wrapper'
+                        sh './gradlew build'
+                        sh "docker build --rm -t ${IMAGE} ."
+                        sh "ssh ${SSH_USER}@${SSH_HOST} 'docker rm -f ${IMAGE} && docker rmi -f ${IMAGE}'"
+                        sh "docker save ${IMAGE} | ssh ${SSH_USER}@${SSH_HOST} 'docker load'"
+                        sh "ssh ${SSH_USER}@${SSH_HOST} 'docker run -d -p ${PORT}:${PORT} --network mci --restart always -e API_GATEWAY=${API_GATEWAY_ADDRESS} -e URL_DATABASE=${URL_DATABASE} --name ${IMAGE} ${IMAGE}'"
+                        sh "docker rmi -f ${IMAGE}"
+                    }
+                }
+            }
+        }
+    }
+}
