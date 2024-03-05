@@ -1,0 +1,79 @@
+version: '3.4'
+
+x-common-variables: &common-variables
+  API_GATEWAY: ${api_gateway}
+  URL_DATABASE:  jdbc:postgresql://${postgres_domain}:${postgres_port}/${postgres_db}?currentSchema=${schema}
+  PASSWORD_DB: ${password_db}
+  USERNAME_DB: ${username_db}
+  DISCOVERY_SERVICE: ${DISCOVERY_SERVICE}
+
+services:
+  demo-postgres:
+    image: postgres:${POSTGRES_VERSION}
+    container_name: postgres-db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${username_db}
+      POSTGRES_PASSWORD: ${password_db}
+      POSTGRES_DB: ${postgres_db}
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    networks:
+      - demo
+  api-gateway:
+    build:
+      context: ./demo-backend/api-gateway
+    image: demo/api-gateway
+    container_name: demo-api-gateway
+    volumes:
+      - ./logs/api_gateway_log:/app/logs
+    ports:
+      - "8081:8081"
+    networks:
+      - demo
+    restart: always
+
+  discovery-service:
+    build:
+      context: ./demo-backend/discovery-service
+    image: demo/discovery-service
+    container_name: demo-discovery-service
+    volumes:
+      - ./logs/discovery_service_log:/app/logs
+    ports:
+      - "8761:8761"
+    networks:
+      - demo
+    restart: always
+
+  demo-service:
+    build:
+      context: ./demo-backend/demo-service
+    image: demo/demo-service
+    container_name: demo-demo-service
+    volumes:
+      - ./logs/demo_service_log:/app/logs
+    ports:
+      - "8082:8082"
+    networks:
+      - demo
+    restart: always
+    environment:
+      <<: *common-variables
+  fe-demo:
+    build:
+      context: ./demo-frontend
+    image: demo/fe-demo
+    container_name: fe-demo
+    ports:
+      - "8079:8079"
+    environment:
+      - BE_HOST=${be_host}
+      - BE_PORT=${be_port}
+    networks:
+      - demo
+    restart: always
+networks:
+  demo:
+    external: true
